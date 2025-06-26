@@ -1,8 +1,8 @@
-name: Deploy to EC2
+name: Deploy Frontend to EC2
 
 on:
   push:
-    branches: [main]
+    branches: [master]   # ✅ Correct branch name
 
 jobs:
   deploy:
@@ -51,12 +51,12 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo "🔐 Setting permissions"
-            sudo git config --global --add safe.directory /var/www/NextStarter
-            sudo chown -R ${{ secrets.EC2_USERNAME }}:${{ secrets.EC2_USERNAME }} /var/www/NextStarter
+            sudo git config --global --add safe.directory /var/www/html/frontend
+            sudo chown -R ${{ secrets.EC2_USERNAME }}:${{ secrets.EC2_USERNAME }} /var/www/html/frontend
 
             echo "📦 Pulling latest code"
-            cd /var/www/NextStarter
-            git pull origin main
+            cd /var/www/html/frontend
+            git pull origin master   # ✅ use master here
 
             echo "🧹 Cleaning previous builds and caches"
             rm -rf node_modules .next .cache
@@ -64,93 +64,12 @@ jobs:
             echo "📥 Installing dependencies"
             npm ci
 
-            echo "🔨 Building the application"
+            echo "🔨 Building the Next.js application"
             npm run build
 
-            echo "🚀 Restarting application with PM2"
-            pm2 delete nextjs-app || true
-            pm2 start npm --name "nextjs-app" -- run start
+            echo "🚀 Restarting frontend with PM2"
+            pm2 delete frontend || true
+            pm2 start npm --name "frontend" -- run start
             pm2 save
 
-            echo "✅ Deployment completed successfully"
-
-
-
-
-
-# name: Deploy to EC2
-
-# on:
-#   push:
-#     branches: [main]
-
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
-#     environment: Production
-
-#     steps:
-#       - uses: actions/checkout@v3
-
-#       - name: Setup Node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: "18"
-#           cache: "npm"
-
-#       - name: Install dependencies
-#         run: npm ci
-
-#       - name: Run linting
-#         run: npm run lint
-
-#       - name: Build application
-#         run: npm run build
-
-#       - name: Check SSH Secrets
-#         run: |
-#           if [ -z "${{ secrets.EC2_HOST }}" ]; then
-#             echo "::error::EC2_HOST secret is not set"
-#             exit 1
-#           fi
-#           if [ -z "${{ secrets.EC2_USERNAME }}" ]; then
-#             echo "::error::EC2_USERNAME secret is not set"
-#             exit 1
-#           fi
-#           if [ -z "${{ secrets.EC2_SSH_KEY }}" ]; then
-#             echo "::error::EC2_SSH_KEY secret is not set"
-#             exit 1
-#           fi
-
-#       - name: Deploy to EC2
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ secrets.EC2_HOST }}
-#           username: ${{ secrets.EC2_USERNAME }}
-#           key: ${{ secrets.EC2_SSH_KEY }}
-#           script: |
-#             # Fix Git ownership issue
-#             sudo git config --global --add safe.directory /var/www/NextStarter
-
-#             # Set correct permissions for the application directory
-#             sudo chown -R ${{ secrets.EC2_USERNAME }}:${{ secrets.EC2_USERNAME }} /var/www/NextStarter
-
-#             cd /var/www/NextStarter
-#             git pull origin main
-
-#             # Clean install with correct permissions
-#             sudo rm -rf node_modules
-#             sudo rm -rf .next
-#             npm ci
-
-#             # Install next globally
-#             sudo npm install -g next
-
-#             # Build the application
-#             npm run build
-
-#             # Stop any existing PM2 process
-#             pm2 delete nextjs-app || true
-
-#             # Start the application with PM2 using the full path to npm
-#             pm2 start npm --name "nextjs-app" -- run start
+            echo "✅ Frontend deployment completed"

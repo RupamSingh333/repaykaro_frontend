@@ -8,6 +8,8 @@ import ScrollAnimation from '@/components/common/ScrollAnimation';
 import TermsModal from '@/components/common/TermsModal';
 import { useState } from 'react';
 
+// test rupam singh
+
 export default function HomePage() {
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
