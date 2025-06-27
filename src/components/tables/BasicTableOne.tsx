@@ -574,7 +574,7 @@ const CustomerTable: React.FC = () => {
             <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
               <TableRow>
                 <TableCell isHeader className="px-5 py-3 font-medium text-start text-theme-xs text-gray-500">
-                  Sr.NOO.
+                  Sr.NOO-test.
                 </TableCell>
                 <TableCell isHeader className="px-5 py-3 font-medium text-start text-theme-xs text-gray-500">
                   Customer / Phone
