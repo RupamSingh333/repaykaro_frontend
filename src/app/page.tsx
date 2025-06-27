@@ -8,8 +8,6 @@ import ScrollAnimation from '@/components/common/ScrollAnimation';
 import TermsModal from '@/components/common/TermsModal';
 import { useState } from 'react';
 
-// test rupam singh
-
 export default function HomePage() {
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,7 +61,7 @@ export default function HomePage() {
                                     Simplify Your{' '}
                                     <span className="gradient-text animate-gradient">Loan Repayment</span>
                                     <br />
-                                    <span className="inline-block animate-bounce-subtle">with RepayKaro.</span>
+                                    <span className="inline-block animate-bounce-subtle">with RepayKaro</span>
                                 </h1>
                                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed animate-fadeIn" style={{ animationDelay: '0.5s' }}>
                                     Managing loan repayments has never been easier. Track, plan, and repay your loans efficiently with our smart platform.

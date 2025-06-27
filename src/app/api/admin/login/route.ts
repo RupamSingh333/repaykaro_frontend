@@ -26,41 +26,49 @@ export async function POST(req: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     })
+    console.log('Admin Login Response:', loginRes)
 
-    const loginData = await loginRes.json();
-    // console.log('Admin Login Response:', loginData)
+    try {
+      const loginData = await loginRes.json();
+      if (!loginData.success || !loginData.jwtToken) {
+        return NextResponse.json({
+          success: false,
+          message: loginData.message || 'Login failed',
+        }, { status: 401 })
+      }
 
-    if (!loginData.success || !loginData.jwtToken) {
-      return NextResponse.json({
-        success: false,
-        message: loginData.message || 'Login failed',
-      }, { status: 401 })
+      const token = loginData.jwtToken
+
+      // Create response with admin data
+      const response = NextResponse.json({
+        success: true,
+        message: 'Login successful',
+        user: {
+          email: loginData.email,
+          name: loginData.name,
+          adminToken: token,
+          permissions: loginData.permissions
+        },
+      })
+
+      // Set admin token in cookie with different name than user token
+      response.cookies.set('admin_token', token, {
+        httpOnly: true,
+        secure: false, // Since we're using HTTP
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+      })
+
+      return response
+
+    } catch (error) {
+      console.log("login error", error)
+
     }
 
-    const token = loginData.jwtToken
 
-    // Create response with admin data
-    const response = NextResponse.json({
-      success: true,
-      message: 'Login successful',
-      user: {
-        email: loginData.email,
-        name: loginData.name,
-        adminToken: token,
-        permissions:loginData.permissions
-      },
-    })
 
-    // Set admin token in cookie with different name than user token
-    response.cookies.set('admin_token', token, {
-      httpOnly: true,
-      secure: false, // Since we're using HTTP
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-    })
-
-    return response
 
   } catch (error) {
     console.error('Admin Login API error:', error)
@@ -91,11 +99,11 @@ export async function GET(req: NextRequest) {
 
     // console.log('Raw API Response:', data?.user.permissions);
 
-    
+
     if (nextResponse) {
       // Clear token cookie if unauthorized
       if (nextResponse.status != 200) {
-        nextResponse.cookies.set('token', '', { 
+        nextResponse.cookies.set('token', '', {
           maxAge: 0,
           path: '/',
           httpOnly: true,
