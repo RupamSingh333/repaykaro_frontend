@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Buffer } from 'buffer';
+import Link from 'next/link';
 // import { useDebounce } from '@/hooks/useDebounce';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '../ui/table';
 import Badge from '../ui/badge/Badge';
@@ -294,7 +296,7 @@ const CustomerTable: React.FC = () => {
       'Min. Part Payment Reward',
       'Status',
       'Lender',
-       'Verified By'
+      'Verified By'
     ];
     XLSX.utils.sheet_add_aoa(ws, [header], { origin: 'A1' });
 
@@ -621,13 +623,21 @@ const CustomerTable: React.FC = () => {
                       {(currentPage - 1) * pageSize + index + 1}
                     </TableCell>
                     <TableCell className="px-5 py-1 text-start text-theme-sm text-gray-800 dark:text-white/90">
-                      <span className="inline-flex items-center gap-1 mt-1">
-                        {cust.customer}
-                      </span>
-                      <br />
-                      <span className="inline-flex items-center gap-1 mt-1">
-                        {cust.phone}
-                      </span>
+
+                      <Link
+                        href={`/admin/customer-history/${Buffer.from(String(cust.phone)).toString('base64')
+                          }`}
+                        className="inline-block"
+                      >
+                        <span onClick={() => alert("hello")} className="inline-flex items-center gap-1 mt-1">
+                          {cust.customer}
+                        </span>
+                        <br />
+                        <span className="inline-flex items-center gap-1 mt-1">
+                          {cust.phone}
+                        </span>
+                      </Link>
+
                     </TableCell>
                     <TableCell className="px-5 py-1 text-start text-theme-sm text-gray-600 dark:text-gray-400">
                       {cust?.lender_name || "N/A"}
